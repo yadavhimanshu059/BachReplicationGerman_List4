@@ -198,15 +198,23 @@
           choices: ['Weiter'],
           post_trial_gap: 500
         }
+        
+        var feedback_correct = {
+          type: "html-button-response",
+          stimulus: "<p>" + 'Der Satz: '+temp_prac + '<br> <br> <br>' + 'Welche der vier Aussagen ist richtig? <br> <br> ' + shuffled_prac_alter[0] + '<br>' +shuffled_prac_alter[1] + '<br>'+shuffled_prac_alter[2] + '<br>'+shuffled_prac_alter[3] + '<br> <br> <br>'+ 'Die richtige Antwort ist: '+prac_right+ "</p>",
+          choices: ['Weiter'],
+          post_trial_gap: 500
+        }
         //timeline.push(fixation);
         timeline.push(trial_p3);
         timeline.push(question_practice);
         //timeline.push(feedback);
+        timeline.push(feedback_correct);
     }
 
     var instructions4 = {
       type: "html-button-response",
-      stimulus: "<p> Die Slider-Antwort zeichnet Ihre Intuition über den Schwierigkeitsgrad des Satzes auf. Sie können den Schieberegler je nach Schwierigkeitsgrad des Satzes an einer beliebigen Stelle auf der Skala platzieren. Wenn Sie zum Beispiel denken, dass ein Satz sehr schwierig ist, sollten Sie den Knopf sehr nahe an „sehr schwer“ schieben und wenn Sie denken, dass ein Satz schwierig, aber nicht zu schwer ist, sollten Sie in Richtung „eher schwer“ schieben, aber nicht zu nah an „sehr schwer“. </p>",
+      stimulus: "<p> Nur eine Erinnerung an Ihre Aufgabe <br> <br> <br> Die Slider-Antwort zeichnet Ihre Intuition über den Schwierigkeitsgrad des Satzes auf. Sie können den Schieberegler je nach Schwierigkeitsgrad des Satzes an einer beliebigen Stelle auf der Skala platzieren. Wenn Sie zum Beispiel denken, dass ein Satz sehr schwierig ist, sollten Sie den Knopf sehr nahe an „sehr schwer“ schieben und wenn Sie denken, dass ein Satz schwierig, aber nicht zu schwer ist, sollten Sie in Richtung „eher schwer“ schieben, aber nicht zu nah an „sehr schwer“. <br> <br> Nachdem Sie mit dem Schieberegler geantwortet und auf die Schaltfläche „Weiter“ geklickt haben, sehen Sie einen Bildschirm mit vier alternativen Aussagen. Sie müssen die richtige Alternative zu dem Satz auswählen, den Sie gerade auf dem vorherigen Bildschirm gelesen haben. </p>",
       choices: ['Weiter'],
 
       post_trial_gap: 500
