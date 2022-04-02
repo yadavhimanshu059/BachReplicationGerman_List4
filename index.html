@@ -82,21 +82,12 @@
 
     var instructions3 = {
       type: "html-button-response",
-      stimulus: "<p> Sie sehen zunächst einen Satz auf dem Bildschirm. Bitte lesen Sie den Satz sorgfältig durch. Sie müssen bewerten, ob der Satz leicht verständlich ist oder nicht. Sie sollten Ihre Antwort mit dem Schieberegler unter dem Satz geben. Wenn der Satz leicht verständlich ist, schieben Sie den Knopf in Richtung „leicht“, und wenn der Satz schwer verständlich ist, schieben Sie den Knopf in Richtung „schwer“, und wenn Sie sich nicht entscheiden können, dann lassen Sie den Schieberegler in der Mitte auf „nicht sicher“. </p>",
+      stimulus: "<p> Sie sehen zunächst einen Satz auf dem Bildschirm. Bitte lesen Sie den Satz sorgfältig durch. Sie müssen entscheiden, ob der Satz leicht verständlich ist oder nicht. Sie sollten Ihre Antwort mit dem Schieberegler unter dem Satz geben. Wenn der Satz sehr leicht zu verstehen ist, schieben Sie den Knopf in Richtung „sehr leicht“, wenn der Satz sehr schwer zu verstehen ist, schieben Sie den Knopf in Richtung „sehr schwer“. Wenn der Satz eher leicht, aber nicht sehr leicht ist, bewegen Sie den Schieberegler in Richtung „eher leicht“. </p>",
       choices: ['Weiter'],
 
       post_trial_gap: 500
     };
     timeline.push(instructions3);
-
-    var instructions4 = {
-      type: "html-button-response",
-      stimulus: "<p> Die Slider-Antwort zeichnet Ihre Intuition über den Schwierigkeitsgrad des Satzes auf. Wenn Sie zum Beispiel denken, dass ein Satz sehr schwierig ist, sollten Sie den Knopf sehr nahe an „schwer“ schieben und wenn Sie denken, dass ein Satz schwierig, aber nicht zu schwer ist, sollten Sie in Richtung „schwer“ schieben, aber nicht zu nah an „schwer“. </p>",
-      choices: ['Weiter'],
-
-      post_trial_gap: 500
-    };
-    timeline.push(instructions4);
 
     var instructions5 = {
       type: "html-button-response",
@@ -163,37 +154,43 @@
             type: 'html-slider-response',
             stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + temp_prac + '<br> <br> <br>' + '</p>',
             require_movement: true,
-            labels: ['1 <br> leicht', '5 <br> nicht sicher', '9 <br> schwer'],
+            labels: ['sehr leicht', 'eher leicht', '.','eher schwer','sehr schwer'],
             button_label: 'Weiter',
+            slider_width : 500,
             min: 1,
             max: 9,
             start: 5,
             step: 0.001,
-            data : {stimulus: temp_prac, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: plist[j][2], Item_ID : plist[j][0], Condition_ID : plist[j][1], List_ID : plist[j][4]}
+            data : {stimulus: temp_prac, correct_choice: 0, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: plist[j][2], Item_ID : plist[j][0], Condition_ID : plist[j][1], List_ID : plist[j][4]}
         }
         var prac_right = plist[j][6]
         var prac_false1 = plist[j][7]
         var prac_false2 = plist[j][8]
         var prac_false3 = plist[j][9]
         var shuffled_prac_alter = shuffle([prac_right,prac_false1,prac_false2,prac_false3],1)
+        var corr_choice = 0
+        for(c=0;c<4;c++){
+          if(shuffled_prac_alter[c]==prac_right){
+            corr_choice = c
+          }
+        }
         var question_practice = {
             type: "html-button-response",
-            stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + 'Welche der vier Aussagen ist richtig? <br> <br>' + '</p>',
+            stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + 'Welche der vier Aussagen ist richtig? <br> ' + '</p>',
             choices: shuffled_prac_alter,
-            margin_vertical: '20px',
+            margin_vertical: '15px',
             margin_horizontal: '300px',
             post_trial_gap: 500,
-            data : {stimulus:shuffled_prac_alter, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: plist[j][2], Item_ID : plist[j][0], Condition_ID : plist[j][1], List_ID : plist[j][4]}
+            data : {stimulus:shuffled_prac_alter, correct_choice : corr_choice, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: plist[j][2], Item_ID : plist[j][0], Condition_ID : plist[j][1], List_ID : plist[j][4]}
         }
 
-        //var pract_response = question_practice.response;
-        //var feed=pract_response;
+        var prevdat = jsPsych.data.get().filter({Condition_ID: 'P',trial_type: "html-button-response"}).values()
         var feed="Falsche Antwort!";
-        // if(String.fromCharCode(data_from_current_node.response.button)==prac_right){
-        //     feed="Richtige Antwort!"
-        // } else {
-        //     feed="Falsche Antwort!"
-        // }
+        if(prevdat.response==corr_choice){
+           feed="Richtige Antwort!"
+        } else {
+           feed="Falsche Antwort!"
+        }
 
         var feedback = {
           type: "html-button-response",
@@ -207,6 +204,15 @@
         //timeline.push(feedback);
     }
 
+    var instructions4 = {
+      type: "html-button-response",
+      stimulus: "<p> Die Slider-Antwort zeichnet Ihre Intuition über den Schwierigkeitsgrad des Satzes auf. Sie können den Schieberegler je nach Schwierigkeitsgrad des Satzes an einer beliebigen Stelle auf der Skala platzieren. Wenn Sie zum Beispiel denken, dass ein Satz sehr schwierig ist, sollten Sie den Knopf sehr nahe an „sehr schwer“ schieben und wenn Sie denken, dass ein Satz schwierig, aber nicht zu schwer ist, sollten Sie in Richtung „eher schwer“ schieben, aber nicht zu nah an „sehr schwer“. </p>",
+      choices: ['Weiter'],
+
+      post_trial_gap: 500
+    };
+    timeline.push(instructions4);
+    
     var endtraining = {
       type: "html-button-response",
       stimulus: "<p> Übungstests enden hier. Jetzt beginnen wir mit dem Hauptexperiment. </p>",
@@ -223,13 +229,14 @@
                 type: 'html-slider-response',
                 stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + templist + '<br> <br> <br>' + '</p>',
                 require_movement: true,
-                labels: ['1 <br> leicht', '5 <br> nicht sicher', '9 <br> schwer'],
+                labels: ['sehr leicht', 'eher leicht', '.','eher schwer','sehr schwer'],
                 button_label: 'Weiter',
+                slider_width : 500,
                 min: 1,
                 max: 9,
                 start: 5,
                 step: 0.001,
-                data : {stimulus: templist, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list[j][2], Item_ID : list[j][0], Condition_ID : list[j][1], List_ID : list[j][4]}
+                data : {stimulus: templist, correct_choice: 0, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list[j][2], Item_ID : list[j][0], Condition_ID : list[j][1], List_ID : list[j][4]}
             }
 
             var temp_right = list[j][6]
@@ -237,13 +244,19 @@
             var temp_false2 = list[j][8]
             var temp_false3 = list[j][9]
             var shuffled_alternatives = shuffle([temp_right,temp_false1,temp_false2,temp_false3],1)
+            var corr_choice = 0
+            for(c=0;c<4;c++){
+              if(shuffled_alternatives[c]==temp_right){
+                corr_choice = c
+              }
+            }
             var question_trial = {
                 type: "html-button-response",
-                stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + 'Welche der vier Aussagen ist richtig? <br> <br>' + '</p>',
+                stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + 'Welche der vier Aussagen ist richtig? <br>' + '</p>',
                 choices: shuffled_alternatives,
-                margin_vertical: '20px',
+                margin_vertical: '15px',
                 margin_horizontal: '300px',
-                data : {stimulus:shuffled_alternatives, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list[j][2], Item_ID : list[j][0], Condition_ID : list[j][1], List_ID : list[j][4]},
+                data : {stimulus:shuffled_alternatives, correct_choice: corr_choice, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list[j][2], Item_ID : list[j][0], Condition_ID : list[j][1], List_ID : list[j][4]},
                 post_trial_gap: 500
             }
 
@@ -285,11 +298,11 @@
           }
           var trial_prestudy = {
               type: "html-button-response",
-              stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + 'Welcher der beiden folgenden Sätze ist akzeptabler? <br> <br>' + '</p>',
+              stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + 'Welcher der beiden folgenden Sätze ist akzeptabler? <br>' + '</p>',
               choices: [templist[0],"Weiß nicht / Gleich gut",templist[1]],
-              margin_vertical: '50px',
+              margin_vertical: '30px',
               margin_horizontal: '300px',
-              data : {stimulus: templist[0]+' '+templist[1], Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list_pres[j][2], Item_ID : list_pres[j][3], List_ID : condnew},
+              data : {stimulus: templist[0]+' '+templist[1], correct_choice: 0, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list_pres[j][2], Item_ID : list_pres[j][3], List_ID : condnew},
               post_trial_gap: 500
           }
           timeline.push(trial_prestudy);
@@ -307,9 +320,9 @@
       var demo1 = {
         type: 'survey-text',
         questions: [
-          {prompt: "Wie alt sind Sie?", name: 'age'},
-          {prompt: "In welcher Region sind Sie aufgewachsen?", name: 'birthlocation'},
-          {prompt: "In welcher Region wohnen Sie jetzt?", name: 'currentlocation'}
+          {prompt: "Wie alt sind Sie?", name: 'age',required:true},
+          {prompt: "In welcher Region sind Sie aufgewachsen?", name: 'birthlocation',required:true},
+          {prompt: "In welcher Region wohnen Sie jetzt?", name: 'currentlocation',required:true}
         ],
         required: true,
         post_trial_gap: 500
@@ -319,8 +332,8 @@
       var demo2 = {
         type: 'survey-multi-choice',
         questions: [
-          {prompt: "Was ist Ihr höchster Bildungsgrad?", name: 'education', options: ["Sekundarstufe I", "Sekundarstufe II", "Bachelor", "Master", "Promotion","Andere"], required: false},
-          {prompt: "Sprechen Sie fließend Niederländisch?", name: 'dutch', options: ["Ja","Nein"], required: false}
+          {prompt: "Was ist Ihr höchster Bildungsgrad?", name: 'education', options: ["Sekundarstufe I", "Sekundarstufe II", "Bachelor", "Master", "Promotion","Andere"], required: true},
+          {prompt: "Sprechen Sie fließend Niederländisch?", name: 'dutch', options: ["Ja","Nein"], required: true}
         ],
         required: true,
         post_trial_gap: 500
